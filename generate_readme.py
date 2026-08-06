@@ -133,15 +133,15 @@ def build_svg(theme, art):
         ("OS", "Arch Linux + Hyprland"),
         ("WM", "Hyprland (Wayland)"),
         ("Shell", "bash/zsh"),
-        ("Rol", "Ing. Sistemas — EAN, Bogotá"),
-        ("Inglés", "B2"),
-        ("Lenguajes", "Python · TypeScript · C++ · Bash"),
-        ("IA/ML", "Whisper · CLIP · OCR · InsightFace"),
+        ("Role", "Systems Engineer — EAN, Bogotá"),
+        ("English", "B2"),
+        ("Languages", "Python · TypeScript · C++ · Bash"),
+        ("AI/ML", "Whisper · CLIP · OCR · InsightFace"),
         ("Backend", "FastAPI · SQLAlchemy"),
         ("Frontend", "React · Vite · Tailwind"),
         ("DevOps", "Docker · systemd · GitHub Actions"),
         ("Hardware", "Arduino · uinput · Wine"),
-        ("Focus", "IA aplicada + estética cyberpunk"),
+        ("Focus", "Applied AI + cyberpunk aesthetics"),
     ]
     yy = 55
     for k, v in rows:
@@ -160,7 +160,7 @@ def build_svg(theme, art):
     yy += 24
     info.append(f'<tspan x="{info_x}" y="{yy}" fill="{dim_green}">.</tspan>'
                 f'<tspan fill="{green}">Followers</tspan><tspan fill="{dim_green}">: {s["followers"]:>4}</tspan>'
-                f'<tspan fill="{dim_green}">   </tspan><tspan fill="{green}">Estado</tspan><tspan fill="{accent}">: OPEN TO WORK</tspan>')
+                f'<tspan fill="{dim_green}">   </tspan><tspan fill="{green}">Status</tspan><tspan fill="{accent}">: OPEN TO WORK</tspan>')
     info.append('</text>')
 
     svg = f'''<?xml version="1.0" encoding="UTF-8"?>
