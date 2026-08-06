@@ -1,0 +1,38 @@
+name: README build
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 4 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install pillow
+
+      - name: Generate profile SVGs
+        env:
+          USER_NAME: AndresBlancoSierra
+        run: python generate_readme.py
+
+      - name: Commit changes
+        run: |
+          git add dark_mode.svg light_mode.svg
+          git diff --quiet && git diff --cached --quiet && echo "Sin cambios" || (
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "Actualizar stats del perfil"
+            git push
+          )
