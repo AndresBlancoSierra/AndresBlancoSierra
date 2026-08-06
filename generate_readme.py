@@ -7,7 +7,7 @@ La foto del perfil se convierte a ASCII art en el mismo paso (foto.jpg).
 import os
 import urllib.request
 import json
-import base64
+import random
 
 USER_NAME = os.environ.get("USER_NAME", "AndresBlancoSierra")
 PHOTO = "foto.jpg"
@@ -125,10 +125,32 @@ def build_svg(theme, art):
         tspans.append(f'<tspan x="15" y="{y}">{line}</tspan>')
         y += 22
 
+    svg_h = y + 40
+
+    # Matrix rain: columnas de caracteres que caen (CSS animation)
+    rain_chars = "01アイウエオカキクケコサシスセソ$#%*+=-~^"
+    random.seed(7)
+    rain_cols = []
+    n_cols = 14
+    for c_idx in range(n_cols):
+        x = random.randint(10, svg_w - 10)
+        dur = round(random.uniform(4.5, 9.0), 1)
+        delay = round(random.uniform(-9.0, 0.0), 1)
+        col = "".join(random.choice(rain_chars) for _ in range(random.randint(6, 14)))
+        tsp = "".join(
+            f'<tspan x="{x}" y="{24 + r_idx * 22}">{c}</tspan>'
+            for r_idx, c in enumerate(col)
+        )
+        rain_cols.append(
+            f'<g class="rain" style="animation-duration:{dur}s;animation-delay:{delay}s">{tsp}</g>'
+        )
+
     # panel de info
     info = []
     info.append(f'<text x="{info_x}" y="25" fill="{fg}" font-size="16" font-family="monospace">')
-    info.append(f'<tspan x="{info_x}" y="25" fill="{green}">andres@arch</tspan><tspan fill="{dim_green}"> ─────────────────────────────</tspan>')
+    info.append(f'<tspan x="{info_x}" y="25" class="glitch" fill="{green}">andres@arch</tspan>'
+                f'<tspan class="cursor" fill="{accent}">▌</tspan>'
+                f'<tspan fill="{dim_green}"> ─────────────────────────────</tspan>')
     rows = [
         ("OS", "Arch Linux + Hyprland"),
         ("WM", "Hyprland (Wayland)"),
@@ -164,14 +186,45 @@ def build_svg(theme, art):
     info.append('</text>')
 
     svg = f'''<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="{svg_w}px" height="{y + 40}px" font-family="Consolas,Menlo,monospace" font-size="16px">
+<svg xmlns="http://www.w3.org/2000/svg" width="{svg_w}px" height="{svg_h}px" font-family="Consolas,Menlo,monospace" font-size="16px">
 <defs>
 <style>
 text {{ white-space: pre; }}
+.cursor {{
+  animation: blink 1.1s step-end infinite;
+}}
+@keyframes blink {{
+  50% {{ opacity: 0; }}
+}}
+.rain {{
+  animation-name: fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  fill: {green};
+  opacity: 0;
+}}
+@keyframes fall {{
+  0%   {{ transform: translateY(-120%); opacity: 0; }}
+  10%  {{ opacity: 0.35; }}
+  90%  {{ opacity: 0.25; }}
+  100% {{ transform: translateY(120%); opacity: 0; }}
+}}
+.glitch {{
+  animation: glitch 3s steps(1) 1;
+}}
+@keyframes glitch {{
+  0%   {{ transform: translate(0); }}
+  5%   {{ transform: translate(-2px, 1px); }}
+  10%  {{ transform: translate(2px, -1px); }}
+  15%  {{ transform: translate(-1px, 0); }}
+  20%  {{ transform: translate(0); }}
+  100% {{ transform: translate(0); }}
+}}
 </style>
 </defs>
 <rect width="100%" height="100%" fill="{bg}" rx="12"/>
-<rect x="4" y="4" width="{svg_w - 8}" height="{y + 32}" fill="none" stroke="{border}" stroke-width="1" rx="10" opacity="0.35"/>
+<rect x="4" y="4" width="{svg_w - 8}" height="{svg_h - 8}" fill="none" stroke="{border}" stroke-width="1" rx="10" opacity="0.35"/>
+<g id="rain">{"".join(rain_cols)}</g>
 <text fill="{green}">
 {"".join(tspans)}
 </text>

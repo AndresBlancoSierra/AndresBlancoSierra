@@ -27,9 +27,17 @@ jobs:
           USER_NAME: AndresBlancoSierra
         run: python generate_readme.py
 
+      - name: Generate contribution snake
+        uses: Platane/snk@v3
+        with:
+          github_user_name: AndresBlancoSierra
+          outputs: |
+            dist/github-snake.svg
+            dist/github-snake-dark.svg?palette=github-dark
+
       - name: Commit changes
         run: |
-          git add dark_mode.svg light_mode.svg
+          git add dark_mode.svg light_mode.svg dist/github-snake.svg dist/github-snake-dark.svg
           git diff --quiet && git diff --cached --quiet && echo "Sin cambios" || (
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
