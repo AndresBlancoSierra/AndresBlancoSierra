@@ -14,7 +14,6 @@
   <a href="https://github.com/AndresBlancoSierra/guitar-hero-controller"><img src="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/project-guitar-hero-controller.svg" alt="Guitar Hero Controller"></a>
   <a href="https://github.com/AndresBlancoSierra/cp2077-ui-react"><img src="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/project-cp2077-ui-react.svg" alt="CP2077 UI"></a>
   <a href="https://github.com/AndresBlancoSierra/opencode-telegram-controller"><img src="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/project-opencode-telegram-controller.svg" alt="OpenCode Telegram Controller"></a>
-  <a href="https://github.com/AndresBlancoSierra/GYM-ciberpunk-wallpaper"><img src="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/project-GYM-ciberpunk-wallpaper.svg" alt="GYM.OS"></a>
 </p>
 
 <p align="center">
@@ -22,7 +21,7 @@
 </p>
 
 <p align="center">
-  <img src="https://streak-stats.demolab.com/?user=AndresBlancoSierra&theme=transparent&hide_border=true&stroke=00ff41&ring=00ff41&fire=39ff14&currStreakNum=00ff41&sideNums=00ff41&currStreakLabel=00ff41&sideLabels=00cc33&dates=00cc33" alt="GitHub Streak">
+  <img src="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/streak.svg" alt="GitHub Streak">
 </p>
 
 <p align="center">

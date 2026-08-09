@@ -49,15 +49,22 @@ _)      \\___,      .
      `-'       `--'
        ARCH LINUX""".splitlines()
 
-PROJECTS = [
-    ("WHAT?", "what", "Learn languages with songs: download, Whisper transcription and Genius lyrics.", "python"),
-    ("Portrait Dataset Builder", "portrait-dataset-builder", "CLI to build curated portrait datasets: face detection, deduplication and CLIP.", "python"),
-    ("English Capture", "english-capture", "Global text capture with OCR to learn English.", "opencv"),
-    ("Guitar Hero Controller", "guitar-hero-controller", "Physical Guitar Hero controller: Arduino + uinput driver.", "arduino"),
-    ("CP2077 UI", "cp2077-ui-react", "Cyberpunk 2077 UI replica in React/TypeScript.", "react"),
-    ("OpenCode Telegram Controller", "opencode-telegram-controller", "Telegram bot to remotely control OpenCode tasks.", "telegram"),
-    ("GYM.OS", "GYM-ciberpunk-wallpaper", "Animated HTML wallpaper that gamifies the gym by reading your Obsidian notes.", "html5"),
-]
+LANG_ICONS = {
+    "Python": "python",
+    "TypeScript": "typescript",
+    "JavaScript": "javascript",
+    "C++": "cplusplus",
+    "C": "c",
+    "Java": "java",
+    "Go": "go",
+    "Rust": "rust",
+    "HTML": "html5",
+    "CSS": "css",
+    "Shell": "gnubash",
+    "Arduino": "arduino",
+    "Vue": "vuedotjs",
+    "Dart": "dart",
+}
 
 CONTACT = [
     ("EMAIL", "andresfelipeblancos15@gmail.com"),
@@ -93,6 +100,41 @@ def public_stats():
     except Exception as e:
         print(f"[warn] no se pudieron obtener stats públicas: {e}")
     return stats
+
+
+def graphql(query):
+    """Ejecuta una consulta GraphQL con el token disponible (GITHUB_TOKEN o fallback)."""
+    token = os.environ.get("GITHUB_TOKEN", "")
+    headers = {"User-Agent": "profile-readme", "Accept": "application/vnd.github+json"}
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    req = urllib.request.Request(
+        "https://api.github.com/graphql",
+        data=json.dumps({"query": query}).encode(),
+        headers=headers,
+    )
+    with urllib.request.urlopen(req, timeout=30) as r:
+        return json.loads(r.read())
+
+
+def pinned_projects():
+    """Lee los proyectos fijados del perfil (pinnedItems) vía GraphQL."""
+    q = """{ user(login: "USER") {
+      pinnedItems(first: 6, types: REPOSITORY) {
+        nodes { ... on Repository { name description primaryLanguage { name } } }
+      } } }""".replace("USER", USER_NAME)
+    try:
+        data = graphql(q)
+        nodes = data["data"]["user"]["pinnedItems"]["nodes"]
+    except Exception as e:
+        print(f"[warn] no se pudieron leer proyectos fijados: {e}")
+        return []
+    out = []
+    for n in nodes:
+        lang = (n.get("primaryLanguage") or {}).get("name", "")
+        icon = LANG_ICONS.get(lang, "")
+        out.append((n["name"], n["name"], n.get("description") or "", icon))
+    return out
 
 
 def visitor_count():
@@ -228,32 +270,9 @@ def crt_head(svg_w, svg_h):
 
 
 def plain_css():
-    """CSS mínimo para secciones transparentes: solo el glitch del header."""
+    """CSS mínimo para secciones transparentes (sin glitch)."""
     return """
 text {{ white-space: pre; }}
-.gfx {{ animation: glitchfx 11s steps(1) infinite; }}
-@keyframes glitchfx {{
-  0%, 38% {{ transform: translate(0,0) skewX(0); }}
-  39%     {{ transform: translate(-3px,1px) skewX(-2deg); }}
-  41%     {{ transform: translate(4px,-2px) skewX(3deg); }}
-  43%     {{ transform: translate(-2px,2px) skewX(-1deg); }}
-  45%     {{ transform: translate(0,0) skewX(0); }}
-  68%     {{ transform: translate(0,0) skewX(0); }}
-  69%     {{ transform: translate(3px,-1px) skewX(2deg); }}
-  71%     {{ transform: translate(-4px,1px) skewX(-3deg); }}
-  73%     {{ transform: translate(0,0) skewX(0); }}
-  100%    {{ transform: translate(0,0) skewX(0); }}
-}}
-.chan {{ animation: chsplit 11s steps(1) infinite; }}
-@keyframes chsplit {{
-  0%, 38% {{ opacity: 0; }}
-  39%     {{ opacity: 0.9; }}
-  45%     {{ opacity: 0; }}
-  68%     {{ opacity: 0; }}
-  69%     {{ opacity: 0.9; }}
-  73%     {{ opacity: 0; }}
-  100%    {{ opacity: 0; }}
-}}
 """
 
 
@@ -276,13 +295,10 @@ def glitch_text(x, y, text, size=16):
 
 
 def header_line(x, y, label):
-    return (f'<g class="gfx">'
-            f'<text x="{x}" y="{y}" fill="{GREEN}">andres@arch</text>'
-            f'<text class="chan" x="{x - 3}" y="{y + 1}" fill="{MAGENTA}">andres@arch</text>'
-            f'<text class="chan" x="{x + 3}" y="{y - 1}" fill="{SPLIT}">andres@arch</text>'
-            f'</g>'
-            f'<text x="{x + len("andres@arch") * CW}" y="{y}" fill="{DIM}">:~$ </text>'
-            f'<text x="{x + len("andres@arch:~$ ") * CW}" y="{y}" fill="{ACCENT}"># {label}</text>')
+    """Título de sección en negrita, sin glitch, con salto de línea después."""
+    return (f'<text x="{x}" y="{y}" fill="{GREEN}" font-weight="bold">andres@arch</text>'
+            f'<text x="{x + len("andres@arch") * CW}" y="{y}" fill="{DIM}" font-weight="bold">:~$ </text>'
+            f'<text x="{x + len("andres@arch:~$ ") * CW}" y="{y}" fill="{ACCENT}" font-weight="bold"># {label}</text>')
 
 
 # ================= Hero (dark/light) =================
@@ -467,18 +483,16 @@ text {{ white-space: pre; }}
 
 # ================= Projects (un SVG por fila, clicables) =================
 
-def build_project(name, slug, desc, icon_name):
+def build_project(name, slug, desc, icon_name, width):
     pad_x = 18
     icon_size = 22
     wrap = 78
     lines = textwrap.wrap(desc, wrap) or [desc]
     url = f"→ https://github.com/{USER_NAME}/{slug}"
-    longest = max(len(name) + 2, max(len(l) for l in lines), len(url), len("andres@arch:~$ ls"))
-    width = int(pad_x * 2 + longest * CW + 30)
 
     y = 24
     body = [header_line(pad_x, y, f"ls {slug}")]
-    y += 22
+    y += 24
 
     icon = icon_path(icon_name)
     icon_x = pad_x
@@ -524,6 +538,74 @@ def build_contact(visitors):
     return svg
 
 
+# ================= Streak =================
+
+def streak_stats():
+    """Computa total, current y longest streak desde la creación de la cuenta."""
+    total = 0
+    cur_streak = 0
+    longest = 0
+    try:
+        from datetime import datetime, timedelta
+        today = datetime.now().date()
+        start = datetime(2023, 3, 16).date()
+        all_days = {}
+        cursor = start
+        while cursor < today:
+            end = min(cursor + timedelta(days=364), today)
+            q = ('{ user(login: "U") { contributionsCollection('
+                 f'from: "{cursor}T00:00:00Z", to: "{end}T00:00:00Z") '
+                 '{ contributionCalendar { totalContributions '
+                 'weeks { contributionDays { contributionCount date } } } } } }').replace("U", USER_NAME)
+            data = graphql(q)
+            cal = data["data"]["user"]["contributionsCollection"]["contributionCalendar"]
+            total += cal["totalContributions"]
+            for w in cal["weeks"]:
+                for dd in w["contributionDays"]:
+                    all_days[dd["date"]] = dd["contributionCount"]
+            cursor = end + timedelta(days=1)
+
+        run = 0
+        for date_str, count in sorted(all_days.items()):
+            run = run + 1 if count > 0 else 0
+            longest = max(longest, run)
+        # current streak: hoy hacia atrás (o ayer si hoy es 0)
+        today_str = today.isoformat()
+        cur = 0
+        day = today
+        if all_days.get(today_str, 0) == 0:
+            day = today - timedelta(days=1)
+        while day.isoformat() in all_days and all_days[day.isoformat()] > 0:
+            cur += 1
+            day -= timedelta(days=1)
+        cur_streak = cur
+    except Exception as e:
+        print(f"[warn] no se pudo calcular el streak: {e}")
+    return {"total": total, "current": cur_streak, "longest": longest}
+
+
+def build_streak(streak):
+    pad_x = 18
+    rows = [
+        ("TOTAL", f"{streak['total']:,} contributions"),
+        ("CURRENT", f"▸ {streak['current']} day{'s' if streak['current'] != 1 else ''}"),
+        ("LONGEST", f"▸ {streak['longest']} day{'s' if streak['longest'] != 1 else ''}"),
+    ]
+    max_chars = max(len(k) + 3 + len(v) for k, v in rows)
+    width = int(pad_x * 2 + max_chars * CW + 10)
+
+    body = [header_line(pad_x, 24, "streak")]
+    y = 48
+    for k, v in rows:
+        body.append(f'<text x="{pad_x}" y="{y}" fill="{ACCENT}">{k}</text>'
+                    f'<text x="{pad_x + (len(k) + 3) * CW}" y="{y}" fill="{GREEN}">{v}</text>')
+        y += 24
+    y += 10
+
+    svg = (plain_head(width, y) + "".join(body) + "</svg>\n")
+    return svg
+
+
 if __name__ == "__main__":
     stats = public_stats()
     out = {}
@@ -533,10 +615,25 @@ if __name__ == "__main__":
     out["dark_mode.svg"] = dark
     out["light_mode.svg"] = light
 
-    for name, slug, desc, icon in PROJECTS:
-        out[f"project-{slug}.svg"] = build_project(name, slug, desc, icon)
+    projects = pinned_projects()
+    if not projects:
+        print("[warn] no hay proyectos fijados, se usa la lista por defecto")
+        projects = [
+            ("what", "what", "Learn languages with songs.", "python"),
+            ("cp2077-ui-react", "cp2077-ui-react", "Cyberpunk 2077 UI replica.", "react"),
+        ]
+    max_width = 0
+    for _, slug, desc, _ in projects:
+        lines = textwrap.wrap(desc or "", 78) or [desc or ""]
+        url = f"→ https://github.com/{USER_NAME}/{slug}"
+        longest = max(len(slug) + 2, max(len(l) for l in lines), len(url), len("andres@arch:~$ ls"))
+        max_width = max(max_width, int(18 * 2 + longest * CW + 30))
+
+    for name, slug, desc, icon in projects:
+        out[f"project-{slug}.svg"] = build_project(name, slug, desc, icon, max_width)
 
     out["contact.svg"] = build_contact(visitor_count())
+    out["streak.svg"] = build_streak(streak_stats())
 
     for name, content in out.items():
         with open(name, "w") as f:

@@ -25,6 +25,7 @@ jobs:
       - name: Generate profile SVGs
         env:
           USER_NAME: AndresBlancoSierra
+          GITHUB_TOKEN: ${{ github.token }}
         run: python generate_readme.py
 
       - name: Generate contribution snake
@@ -37,7 +38,7 @@ jobs:
 
       - name: Commit changes
         run: |
-          git add dark_mode.svg light_mode.svg project-*.svg contact.svg dist/github-snake.svg dist/github-snake-dark.svg
+          git add dark_mode.svg light_mode.svg project-*.svg contact.svg streak.svg dist/github-snake.svg dist/github-snake-dark.svg
           git diff --quiet && git diff --cached --quiet && echo "Sin cambios" || (
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
