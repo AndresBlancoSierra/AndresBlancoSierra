@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Genera dark_mode.svg / light_mode.svg con stats de GitHub en estilo neofetch Matrix.
+"""Genera dark_mode.svg / light_mode.svg con stats de GitHub estilo neofetch.
 
+Lado izquierdo: logo de Arch Linux en ASCII art con efectos CRT/glitch estilo
+Vault-Tec (scanlines, flicker, noise, scanbar y glitch bursts periódicos con
+desdoblamiento de canales RGB). Lado derecho: info del sistema + stats.
 Usa solo la API REST pública (sin token): repos, stars y followers.
-La foto del perfil se convierte a ASCII art en el mismo paso (foto.jpg).
 """
 import os
 import urllib.request
@@ -10,38 +12,25 @@ import json
 import random
 
 USER_NAME = os.environ.get("USER_NAME", "AndresBlancoSierra")
-PHOTO = "foto.jpg"
 
-ASCII_ART = [
-    "======---------===-----------:::::------------::.:::::::",
-    "========-----+###*------:::::::::::--------:::..::----::",
-    "===========--=%@%+-----::::::...::::::::::::...:::------",
-    "===========-==*%*------:::::...:::::::::::.....:::::::::",
-    ".......:::--+*==+=:--::-==+++=--:::::::::...::::::::::::",
-    "----:::::.:=++:=+-...-+*####%##**-..:::....:::::::::::::",
-    "==========-:-===-::-+*%%@@@@@@%###-..       .....::::::-",
-    "=---------:::=+++--=%%%@@%%@@@%#@%*..                 ..",
-    "=---------:=#%%%*==-*%#%%#*##*+-*%*.  .............:::::",
-    "==--------+*+=**=:::=+=++==++=-::+=             ...::--=",
-    "=--=-----=*==+##-::::==-=++++=:..==:.:-.       ...::-===",
-    "**+++++-=*+=+#%#==---=++***++=:.=*: . .--:   ...:-======",
-    "******-=*+++*#%#*#*++++****+==-=*+=--...:=-:..-=++===--:",
-    "+++++-=**++*#%%#*#++++-=#%%#**#%@#+=*==--=-----=+=-:..:-",
-    "+++=-+*#++*#%%@#**+=-.:=#@%###%%%%*+*=..+*=====--:..--::",
-    "+=--+**+=+%#%%%*+=...:-*#+==+*#%%@%*+-..**++++++++==:   ",
-    "=--=+**==#%#%%%=..:=+=+#*+**#%%@@#**++-:=====+++**++=-. ",
-    "--=+***-*%%%#%#==++=++==*+**#%@%###***#=+==--+=:-=****#-",
-    "=+*****+#%#@##*++*+==+-.-:--*#%*#%%#**%#++==+++==:=##%%-",
-    "+******#%@#@###*+#++=+---:-=*##+*%%%###%#++++++*******+=",
-    "+****##%%%%%%#%#**#+===+=-=+*#*+#@@@%%%@@#*+++******++*+",
-    "++**##%@#@%%*%#++**=++**=+******####%%%@%*+++++++=++***",
-    "*****%%%@#@#%+##*--=+####*####**+**#######+===++==+**##*",
-    "****#@%%#%@#%+###*=-=#@@@@@@@#**++++*****++======+=+####",
-    "***#%@%@#@%%#+#####*-+@@%%%%%#*+=====++++++====++=..:+##",
-    "*###@@%@#@#%**%%#####+*%##*##**+=----============-:..:=+",
-    "###%@%@%%#@*%%##########***+++**+++=============+:. .:.",
-    "###%@%@#@@#@*%###############%*=++++++++++=====-++::....",
-]
+ARCH_LOGO = """\
+      _nnnn_
+     dGGGGMMb
+    @p~qp~~qMb
+    M|@||@) M|
+    @,----.JM|
+   JS^\\__/  qKL
+  dZP        qKRb
+ dZP          qKKb
+fZP            SMMb
+HZM            MMMM
+FqM            MMMM
+__| ".        |\\dS"qML
+|    `.       | `' \\Zq
+_)      \\___,      .
+\\____   )MMMMMP   .
+     `-'       `--'
+       ARCH LINUX""".splitlines()
 
 # Stats vía REST pública (sin token, funciona en Actions con el rate limit compartido)
 def public_stats():
@@ -75,48 +64,23 @@ def public_stats():
     return stats
 
 
-def photo_ascii(width=56):
-    """Re-genera el ASCII art desde foto.jpg (fallback al ASCII embebido)."""
-    try:
-        from PIL import Image, ImageOps
-    except ImportError:
-        return ASCII_ART
-
-    try:
-        img = Image.open(PHOTO).convert("L")
-        img = ImageOps.autocontrast(img, cutoff=2)
-        img = ImageOps.invert(img)
-        aspect = img.height / img.width
-        height = max(1, int(round(width * aspect * 0.5)))
-        img = img.resize((width, height))
-        chars = " .:-=+*#%@"
-        lines = []
-        for y in range(height):
-            row = "".join(
-                chars[min(9, px * len(chars) // 256)] for px in [img.getpixel((x, y)) for x in range(width)]
-            )
-            lines.append(row)
-        return lines
-    except Exception:
-        return ASCII_ART
-
-
-def build_svg(theme, art):
+def build_svg(theme):
     green = "#00ff41"
     dim_green = "#00cc33"
     fg = "#d9ffe2" if theme == "dark" else "#0a1f10"
     bg = "#050a07" if theme == "dark" else "#f0faf3"
-    panel = "#0a140d" if theme == "dark" else "#e6f5ea"
     border = "#00ff41"
     accent = "#39ff14"
+    magenta = "#ea36af"
+    split_green = "#75fa69"
 
     s = stats
-    art_lines = art
+    art_lines = ARCH_LOGO
     art_width = max(len(l) for l in art_lines)
     art_height = len(art_lines)
 
     # columnas de texto a la derecha
-    info_x = 15 + art_width * 9 + 25
+    info_x = 15 + art_width * 9 + 45
     svg_w = info_x + 430
 
     tspans = []
@@ -125,14 +89,12 @@ def build_svg(theme, art):
         tspans.append(f'<tspan x="15" y="{y}">{line}</tspan>')
         y += 22
 
-    svg_h = y + 40
-
     # Matrix rain: columnas de caracteres que caen (CSS animation)
     rain_chars = "01アイウエオカキクケコサシスセソ$#%*+=-~^"
     random.seed(7)
     rain_cols = []
     n_cols = 14
-    for c_idx in range(n_cols):
+    for _ in range(n_cols):
         x = random.randint(10, svg_w - 10)
         dur = round(random.uniform(4.5, 9.0), 1)
         delay = round(random.uniform(-9.0, 0.0), 1)
@@ -185,6 +147,20 @@ def build_svg(theme, art):
                 f'<tspan fill="{dim_green}">   </tspan><tspan fill="{green}">Status</tspan><tspan fill="{accent}">: OPEN TO WORK</tspan>')
     info.append('</text>')
 
+    svg_h = yy + 40
+
+    # logo: base + 2 canales RGB offset (magenta/verde) que solo aparecen en el burst
+    logo_base = "".join(tspans)
+    chan_a = "".join(tspans).replace('x="15"', 'x="12"')
+    chan_b = "".join(tspans).replace('x="15"', 'x="18"')
+    logo_block = (
+        f'<g class="logo-fx">'
+        f'<text fill="{green}">{logo_base}</text>'
+        f'<text class="chan" fill="{magenta}" transform="translate(-3,1)">{chan_a}</text>'
+        f'<text class="chan" fill="{split_green}" transform="translate(3,-1)">{chan_b}</text>'
+        f'</g>'
+    )
+
     svg = f'''<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="{svg_w}px" height="{svg_h}px" font-family="Consolas,Menlo,monospace" font-size="16px">
 <defs>
@@ -220,15 +196,83 @@ text {{ white-space: pre; }}
   20%  {{ transform: translate(0); }}
   100% {{ transform: translate(0); }}
 }}
+.logo-fx {{
+  animation: glitchfx 11s steps(1) infinite;
+}}
+@keyframes glitchfx {{
+  0%, 38% {{ transform: translate(0,0) skewX(0); }}
+  39%     {{ transform: translate(-3px,1px) skewX(-2deg); }}
+  41%     {{ transform: translate(4px,-2px) skewX(3deg); }}
+  43%     {{ transform: translate(-2px,2px) skewX(-1deg); }}
+  45%     {{ transform: translate(0,0) skewX(0); }}
+  68%     {{ transform: translate(0,0) skewX(0); }}
+  69%     {{ transform: translate(3px,-1px) skewX(2deg); }}
+  71%     {{ transform: translate(-4px,1px) skewX(-3deg); }}
+  73%     {{ transform: translate(0,0) skewX(0); }}
+  100%    {{ transform: translate(0,0) skewX(0); }}
+}}
+.chan {{
+  animation: chsplit 11s steps(1) infinite;
+}}
+@keyframes chsplit {{
+  0%, 38% {{ opacity: 0; }}
+  39%     {{ opacity: 0.9; }}
+  45%     {{ opacity: 0; }}
+  68%     {{ opacity: 0; }}
+  69%     {{ opacity: 0.9; }}
+  73%     {{ opacity: 0; }}
+  100%    {{ opacity: 0; }}
+}}
+.flicker {{
+  animation: screenflicker .15s infinite;
+}}
+@keyframes screenflicker {{
+  0% {{ opacity: .04; }} 5% {{ opacity: .07; }} 10% {{ opacity: .04; }} 15% {{ opacity: .08; }}
+  20% {{ opacity: .05; }} 25% {{ opacity: .07; }} 30% {{ opacity: .04; }} 35% {{ opacity: .06; }}
+  40% {{ opacity: .08; }} 45% {{ opacity: .05; }} 50% {{ opacity: .06; }} 55% {{ opacity: .04; }}
+  60% {{ opacity: .07; }} 65% {{ opacity: .05; }} 70% {{ opacity: .07; }} 75% {{ opacity: .04; }}
+  80% {{ opacity: .06; }} 85% {{ opacity: .05; }} 90% {{ opacity: .07; }} 95% {{ opacity: .04; }}
+  100% {{ opacity: .06; }}
+}}
+.noise {{
+  animation: noisejump .35s steps(3) infinite;
+}}
+@keyframes noisejump {{
+  0%   {{ transform: translate(0,0); }}
+  33%  {{ transform: translate(-6px,3px); }}
+  66%  {{ transform: translate(4px,-5px); }}
+  100% {{ transform: translate(-2px,2px); }}
+}}
+.scanbar {{
+  animation: scanbar 7s linear infinite;
+}}
+@keyframes scanbar {{
+  0%   {{ transform: translateY(-90px); }}
+  100% {{ transform: translateY({svg_h + 20}px); }}
+}}
 </style>
 </defs>
+<filter id="noise" x="0" y="0" width="100%" height="100%">
+  <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="2"/>
+  <feColorMatrix type="saturate" values="0"/>
+</filter>
+<pattern id="scan" width="3" height="3" patternUnits="userSpaceOnUse">
+  <rect width="3" height="1" fill="#000000"/>
+</pattern>
+<linearGradient id="sbg" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="{green}" stop-opacity="0"/>
+  <stop offset="0.5" stop-color="{green}" stop-opacity="0.3"/>
+  <stop offset="1" stop-color="{green}" stop-opacity="0"/>
+</linearGradient>
 <rect width="100%" height="100%" fill="{bg}" rx="12"/>
 <rect x="4" y="4" width="{svg_w - 8}" height="{svg_h - 8}" fill="none" stroke="{border}" stroke-width="1" rx="10" opacity="0.35"/>
 <g id="rain">{"".join(rain_cols)}</g>
-<text fill="{green}">
-{"".join(tspans)}
-</text>
+{logo_block}
 {"".join(info)}
+<rect width="100%" height="100%" fill="url(#scan)" opacity="0.5"/>
+<rect class="flicker" width="100%" height="100%" fill="#000000" opacity="0.04"/>
+<rect class="noise" width="100%" height="100%" filter="url(#noise)" opacity="0.05"/>
+<rect class="scanbar" width="100%" height="70" fill="url(#sbg)" opacity="0.35"/>
 </svg>
 '''
     return svg
@@ -236,9 +280,8 @@ text {{ white-space: pre; }}
 
 if __name__ == "__main__":
     stats = public_stats()
-    art = photo_ascii()
-    dark = build_svg("dark", art)
-    light = build_svg("light", art)
+    dark = build_svg("dark")
+    light = build_svg("light")
     for name, content in (("dark_mode.svg", dark), ("light_mode.svg", light)):
         with open(name, "w") as f:
             f.write(content)
