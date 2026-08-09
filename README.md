@@ -1,8 +1,38 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="300" height="90" font-family="monospace">
+<p align="center">
   <a href="https://github.com/AndresBlancoSierra">
-    <rect x="0" y="0" width="300" height="90" fill="#0a140d" rx="8"/>
-    <text x="15" y="30" fill="#00ff41" font-size="16">andres@arch:~$</text>
-    <text x="15" y="55" fill="#00cc33" font-size="16"># test inline svg</text>
-    <text x="15" y="78" fill="#39ff14" font-size="16">→ clickable?</text>
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/dark_mode.svg">
+      <img alt="Andrés Blanco profile — neofetch Matrix" src="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/light_mode.svg">
+    </picture>
   </a>
-</svg>
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/skills.svg" alt="Skills">
+</p>
+
+<p align="center">
+  <a href="https://github.com/AndresBlancoSierra/what"><img src="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/project-what.svg" alt="WHAT?"></a>
+  <a href="https://github.com/AndresBlancoSierra/portrait-dataset-builder"><img src="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/project-portrait-dataset-builder.svg" alt="Portrait Dataset Builder"></a>
+  <a href="https://github.com/AndresBlancoSierra/english-capture"><img src="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/project-english-capture.svg" alt="English Capture"></a>
+  <a href="https://github.com/AndresBlancoSierra/guitar-hero-controller"><img src="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/project-guitar-hero-controller.svg" alt="Guitar Hero Controller"></a>
+  <a href="https://github.com/AndresBlancoSierra/cp2077-ui-react"><img src="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/project-cp2077-ui-react.svg" alt="CP2077 UI"></a>
+  <a href="https://github.com/AndresBlancoSierra/opencode-telegram-controller"><img src="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/project-opencode-telegram-controller.svg" alt="OpenCode Telegram Controller"></a>
+  <a href="https://github.com/AndresBlancoSierra/GYM-ciberpunk-wallpaper"><img src="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/project-GYM-ciberpunk-wallpaper.svg" alt="GYM.OS"></a>
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/dist/github-snake-dark.svg" alt="GitHub Snake">
+</p>
+
+<p align="center">
+  <img src="https://streak-stats.demolab.com/?user=AndresBlancoSierra&theme=dark&hide_border=true&background=050a07&stroke=00ff41&ring=00ff41&fire=39ff14&currStreakNum=00ff41&sideNums=00ff41&currStreakLabel=00ff41&sideLabels=00cc33&dates=00cc33" alt="GitHub Streak">
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/contact.svg" alt="Contact">
+</p>
+
+<p align="center">
+  <img src="https://api.visitorbadge.io/api/visitors?path=AndresBlancoSierra&label=Visitors&countColor=%2300ff41&labelColor=%23050a07" alt="Visitors">
+</p>

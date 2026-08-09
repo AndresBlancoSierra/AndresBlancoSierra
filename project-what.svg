@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="814px" height="70px" font-family="Consolas,Menlo,monospace" font-size="16px">
+<defs>
+<style>
+text { white-space: pre; }
+.glitch { animation: glitch 3s steps(1) 1; }
+@keyframes glitch {
+  0%   { transform: translate(0); }
+  5%   { transform: translate(-2px, 1px); }
+  10%  { transform: translate(2px, -1px); }
+  15%  { transform: translate(-1px, 0); }
+  20%  { transform: translate(0); }
+  100% { transform: translate(0); }
+}
+.gfx { animation: glitchfx 11s steps(1) infinite; }
+@keyframes glitchfx {
+  0%, 38% { transform: translate(0,0) skewX(0); }
+  39%     { transform: translate(-3px,1px) skewX(-2deg); }
+  41%     { transform: translate(4px,-2px) skewX(3deg); }
+  43%     { transform: translate(-2px,2px) skewX(-1deg); }
+  45%     { transform: translate(0,0) skewX(0); }
+  68%     { transform: translate(0,0) skewX(0); }
+  69%     { transform: translate(3px,-1px) skewX(2deg); }
+  71%     { transform: translate(-4px,1px) skewX(-3deg); }
+  73%     { transform: translate(0,0) skewX(0); }
+  100%    { transform: translate(0,0) skewX(0); }
+}
+.chan { animation: chsplit 11s steps(1) infinite; }
+@keyframes chsplit {
+  0%, 38% { opacity: 0; }
+  39%     { opacity: 0.9; }
+  45%     { opacity: 0; }
+  68%     { opacity: 0; }
+  69%     { opacity: 0.9; }
+  73%     { opacity: 0; }
+  100%    { opacity: 0; }
+}
+.flicker { animation: screenflicker .15s infinite; }
+@keyframes screenflicker {
+  0% { opacity: .04; } 5% { opacity: .07; } 10% { opacity: .04; } 15% { opacity: .08; }
+  20% { opacity: .05; } 25% { opacity: .07; } 30% { opacity: .04; } 35% { opacity: .06; }
+  40% { opacity: .08; } 45% { opacity: .05; } 50% { opacity: .06; } 55% { opacity: .04; }
+  60% { opacity: .07; } 65% { opacity: .05; } 70% { opacity: .07; } 75% { opacity: .04; }
+  80% { opacity: .06; } 85% { opacity: .05; } 90% { opacity: .07; } 95% { opacity: .04; }
+  100% { opacity: .06; }
+}
+.noise { animation: noisejump .35s steps(3) infinite; }
+@keyframes noisejump {
+  0%   { transform: translate(0,0); }
+  33%  { transform: translate(-6px,3px); }
+  66%  { transform: translate(4px,-5px); }
+  100% { transform: translate(-2px,2px); }
+}
+.scanbar { animation: scanbar 7s linear infinite; }
+@keyframes scanbar {
+  0%   { transform: translateY(-90px); }
+  100% { transform: translateY(90px); }
+}
+</style>
+<filter id="noise" x="0" y="0" width="100%" height="100%">
+  <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="2"/>
+  <feColorMatrix type="saturate" values="0"/>
+</filter>
+<pattern id="scan" width="3" height="3" patternUnits="userSpaceOnUse">
+  <rect width="3" height="1" fill="#000000"/>
+</pattern>
+<linearGradient id="sbg" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="#00ff41" stop-opacity="0"/>
+  <stop offset="0.5" stop-color="#00ff41" stop-opacity="0.3"/>
+  <stop offset="1" stop-color="#00ff41" stop-opacity="0"/>
+</linearGradient>
+</defs>
+<rect width="100%" height="100%" fill="#0a140d" rx="12"/>
+<rect x="3" y="3" width="808" height="64" fill="none" stroke="#00ff41" stroke-width="1" rx="10" opacity="0.35"/>
+<g class="gfx"><text x="18" y="24" fill="#00ff41">andres@arch</text><text class="chan" x="15" y="25" fill="#ea36af">andres@arch</text><text class="chan" x="21" y="23" fill="#75fa69">andres@arch</text></g><text x="123.6" y="24" fill="#00cc33">:~$ </text><text x="162.0" y="24" fill="#39ff14"># ls what</text><text x="18" y="46" fill="#39ff14">▸ </text><text x="37.2" y="46" fill="#00ff41">WHAT?</text><text x="37.2" y="70" fill="#00cc33">Learn languages with songs: download, Whisper transcription and Genius lyrics.</text><text x="18" y="94" fill="#00cc33">→ https://github.com/AndresBlancoSierra/what</text><rect width="814" height="70" fill="url(#scan)" opacity="0.5"/>
+<rect class="flicker" width="814" height="70" fill="#000000" opacity="0.04"/>
+<rect class="noise" width="814" height="70" filter="url(#noise)" opacity="0.05"/>
+<rect class="scanbar" width="814" height="60" fill="url(#sbg)" opacity="0.3"/></svg>

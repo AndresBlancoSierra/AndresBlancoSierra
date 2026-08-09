@@ -32,12 +32,12 @@ jobs:
         with:
           github_user_name: AndresBlancoSierra
           outputs: |
-            dist/github-snake.svg
-            dist/github-snake-dark.svg?palette=github-dark
+            dist/github-snake.svg?color_snake=%2300ff41&color_dots=%23f0faf3,%23cdeedd,%2386d9a6,%2339ff14,%2300ff41
+            dist/github-snake-dark.svg?color_snake=%2300ff41&color_dots=%23050a07,%230f2a17,%2300cc33,%2339ff14,%2300ff41
 
       - name: Commit changes
         run: |
-          git add dark_mode.svg light_mode.svg dist/github-snake.svg dist/github-snake-dark.svg
+          git add dark_mode.svg light_mode.svg skills.svg project-*.svg contact.svg dist/github-snake.svg dist/github-snake-dark.svg
           git diff --quiet && git diff --cached --quiet && echo "Sin cambios" || (
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
