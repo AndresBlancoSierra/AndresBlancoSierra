@@ -3,13 +3,13 @@
 
 Archivos de salida:
   dark_mode.svg / light_mode.svg  → hero neofetch con logo Arch + FX CRT
-  skills.svg                     → panel de skills estilo terminal
   project-<slug>.svg             → un SVG por proyecto (clicables vía <a>)
-  contact.svg                    → panel de contacto
+  contact.svg                    → contacto + contador de visitas
 
 Usa solo la API REST pública (sin token): repos, stars y followers.
 """
 import os
+import re
 import urllib.request
 import json
 import random
@@ -49,17 +49,14 @@ _)      \\___,      .
      `-'       `--'
        ARCH LINUX""".splitlines()
 
-SKILLS = ["Python", "TypeScript", "React", "C++", "Bash",
-          "FastAPI", "SQLite", "Docker", "Linux", "Arduino"]
-
 PROJECTS = [
-    ("WHAT?", "what", "Learn languages with songs: download, Whisper transcription and Genius lyrics."),
-    ("Portrait Dataset Builder", "portrait-dataset-builder", "CLI to build curated portrait datasets: face detection, deduplication and CLIP."),
-    ("English Capture", "english-capture", "Global text capture with OCR to learn English."),
-    ("Guitar Hero Controller", "guitar-hero-controller", "Physical Guitar Hero controller: Arduino + uinput driver."),
-    ("CP2077 UI", "cp2077-ui-react", "Cyberpunk 2077 UI replica in React/TypeScript."),
-    ("OpenCode Telegram Controller", "opencode-telegram-controller", "Telegram bot to remotely control OpenCode tasks."),
-    ("GYM.OS", "GYM-ciberpunk-wallpaper", "Animated HTML wallpaper that gamifies the gym by reading your Obsidian notes."),
+    ("WHAT?", "what", "Learn languages with songs: download, Whisper transcription and Genius lyrics.", "python"),
+    ("Portrait Dataset Builder", "portrait-dataset-builder", "CLI to build curated portrait datasets: face detection, deduplication and CLIP.", "python"),
+    ("English Capture", "english-capture", "Global text capture with OCR to learn English.", "opencv"),
+    ("Guitar Hero Controller", "guitar-hero-controller", "Physical Guitar Hero controller: Arduino + uinput driver.", "arduino"),
+    ("CP2077 UI", "cp2077-ui-react", "Cyberpunk 2077 UI replica in React/TypeScript.", "react"),
+    ("OpenCode Telegram Controller", "opencode-telegram-controller", "Telegram bot to remotely control OpenCode tasks.", "telegram"),
+    ("GYM.OS", "GYM-ciberpunk-wallpaper", "Animated HTML wallpaper that gamifies the gym by reading your Obsidian notes.", "html5"),
 ]
 
 CONTACT = [
@@ -96,6 +93,47 @@ def public_stats():
     except Exception as e:
         print(f"[warn] no se pudieron obtener stats públicas: {e}")
     return stats
+
+
+def visitor_count():
+    """Lee el contador de visitas (visitorbadge.io) y devuelve el número."""
+    try:
+        req = urllib.request.Request(
+            f"https://api.visitorbadge.io/api/visitors?path={USER_NAME}",
+            headers={"User-Agent": "profile-readme"},
+        )
+        with urllib.request.urlopen(req, timeout=15) as r:
+            svg = r.read().decode()
+        m = re.search(r'<title>VISITORS:?\s*(\d+)</title>', svg)
+        if m:
+            return m.group(1)
+    except Exception as e:
+        print(f"[warn] no se pudo obtener el contador de visitas: {e}")
+    return ""
+
+
+_ICON_CACHE = {}
+
+
+def icon_path(name):
+    """Devuelve el <path> de un icono de simple-icons recoloreado a verde."""
+    if name in _ICON_CACHE:
+        return _ICON_CACHE[name]
+    path = ""
+    try:
+        req = urllib.request.Request(
+            f"https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/{name}.svg",
+            headers={"User-Agent": "profile-readme"},
+        )
+        with urllib.request.urlopen(req, timeout=15) as r:
+            raw = r.read().decode()
+        m = re.search(r'<path[^>]*d="([^"]+)"', raw)
+        if m:
+            path = f'<path d="{m.group(1)}" fill="{GREEN}"/>'
+    except Exception as e:
+        print(f"[warn] no se pudo descargar el icono {name}: {e}")
+    _ICON_CACHE[name] = path
+    return path
 
 
 # ================= CSS compartido (FX Vault-Tec) =================
@@ -186,6 +224,46 @@ def crt_head(svg_w, svg_h):
 </defs>
 <rect width="100%" height="100%" fill="{PANEL}" rx="12"/>
 <rect x="3" y="3" width="{svg_w - 6}" height="{svg_h - 6}" fill="none" stroke="{BORDER}" stroke-width="1" rx="10" opacity="0.35"/>
+"""
+
+
+def plain_css():
+    """CSS mínimo para secciones transparentes: solo el glitch del header."""
+    return """
+text {{ white-space: pre; }}
+.gfx {{ animation: glitchfx 11s steps(1) infinite; }}
+@keyframes glitchfx {{
+  0%, 38% {{ transform: translate(0,0) skewX(0); }}
+  39%     {{ transform: translate(-3px,1px) skewX(-2deg); }}
+  41%     {{ transform: translate(4px,-2px) skewX(3deg); }}
+  43%     {{ transform: translate(-2px,2px) skewX(-1deg); }}
+  45%     {{ transform: translate(0,0) skewX(0); }}
+  68%     {{ transform: translate(0,0) skewX(0); }}
+  69%     {{ transform: translate(3px,-1px) skewX(2deg); }}
+  71%     {{ transform: translate(-4px,1px) skewX(-3deg); }}
+  73%     {{ transform: translate(0,0) skewX(0); }}
+  100%    {{ transform: translate(0,0) skewX(0); }}
+}}
+.chan {{ animation: chsplit 11s steps(1) infinite; }}
+@keyframes chsplit {{
+  0%, 38% {{ opacity: 0; }}
+  39%     {{ opacity: 0.9; }}
+  45%     {{ opacity: 0; }}
+  68%     {{ opacity: 0; }}
+  69%     {{ opacity: 0.9; }}
+  73%     {{ opacity: 0; }}
+  100%    {{ opacity: 0; }}
+}}
+"""
+
+
+def plain_head(svg_w, svg_h):
+    """Cabecera sin fondo, sin borde y sin overlays: solo texto Matrix sobre transparente."""
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{svg_w}px" height="{svg_h}px" font-family="{MONO}" font-size="16px">
+<defs>
+<style>{plain_css()}</style>
+</defs>
 """
 
 
@@ -387,78 +465,62 @@ text {{ white-space: pre; }}
     return svg
 
 
-# ================= Skills =================
-
-def build_skills():
-    pad_x = 18
-    cols = 4
-    chip_w = 128
-    chip_h = 26
-    gap = 10
-    n_rows = (len(SKILLS) + cols - 1) // cols
-    width = int(pad_x * 2 + cols * chip_w + (cols - 1) * gap)
-    top = 42
-    height = int(top + n_rows * chip_h + (n_rows - 1) * gap + 22)
-
-    chips = []
-    for i, s in enumerate(SKILLS):
-        r, c = divmod(i, cols)
-        x = pad_x + c * (chip_w + gap)
-        y = top + r * (chip_h + gap)
-        chips.append(
-            f'<rect x="{x}" y="{y}" width="{chip_w}" height="{chip_h}" rx="6" '
-            f'fill="{BG}" stroke="{DIM}" stroke-width="1" opacity="0.9"/>'
-            f'<text x="{x + chip_w // 2}" y="{y + 18}" fill="{GREEN}" '
-            f'text-anchor="middle">{s}</text>'
-        )
-
-    body = header_line(pad_x, 28, "skills") + "".join(chips)
-    svg = (crt_head(width, height) + body + fx_overlays(width, height) + "</svg>\n")
-    return svg
-
-
 # ================= Projects (un SVG por fila, clicables) =================
 
-def build_project(name, slug, desc):
+def build_project(name, slug, desc, icon_name):
     pad_x = 18
+    icon_size = 22
     wrap = 78
     lines = textwrap.wrap(desc, wrap) or [desc]
-    max_chars = max(len(name) + 2, max(len(l) for l in lines), len("andres@arch:~$ ls"))
-    width = int(pad_x * 2 + max_chars * CW + 30)
-    height = int(30 + len(lines) * 24 + 16)
+    url = f"→ https://github.com/{USER_NAME}/{slug}"
+    longest = max(len(name) + 2, max(len(l) for l in lines), len(url), len("andres@arch:~$ ls"))
+    width = int(pad_x * 2 + longest * CW + 30)
 
-    body = []
-    body.append(header_line(pad_x, 24, f"ls {slug}"))
-    y = 46
-    body.append(f'<text x="{pad_x}" y="{y}" fill="{ACCENT}">▸ </text>'
-                f'<text x="{pad_x + 2 * CW}" y="{y}" fill="{GREEN}">{name}</text>')
+    y = 24
+    body = [header_line(pad_x, y, f"ls {slug}")]
+    y += 22
+
+    icon = icon_path(icon_name)
+    icon_x = pad_x
+    icon_y = y - icon_size + 6
+    if icon:
+        body.append(
+            f'<g transform="translate({icon_x}, {icon_y})">'
+            f'<svg xmlns="http://www.w3.org/2000/svg" width="{icon_size}" height="{icon_size}" '
+            f'viewBox="0 0 24 24">{icon}</svg></g>'
+        )
+
+    text_x = icon_x + (icon_size + 8 if icon else 0)
+    body.append(f'<text x="{text_x}" y="{y}" fill="{ACCENT}">▸ </text>'
+                f'<text x="{text_x + 2 * CW}" y="{y}" fill="{GREEN}">{name}</text>')
     y += 24
     for l in lines:
-        body.append(f'<text x="{pad_x + 2 * CW}" y="{y}" fill="{DIM}">{l}</text>')
+        body.append(f'<text x="{text_x}" y="{y}" fill="{DIM}">{l}</text>')
         y += 24
-    body.append(f'<text x="{pad_x}" y="{y}" fill="{DIM}">→ https://github.com/{USER_NAME}/{slug}</text>')
+    body.append(f'<text x="{text_x}" y="{y}" fill="{DIM}">{url}</text>')
+    y += 24
 
-    svg = (crt_head(width, height) + "".join(body) + fx_overlays(width, height) + "</svg>\n")
+    svg = (plain_head(width, y) + "".join(body) + "</svg>\n")
     return svg
 
 
 # ================= Contact =================
 
-def build_contact():
+def build_contact(visitors):
     pad_x = 18
-    max_chars = max(len(k) + 3 + len(v) for k, v in CONTACT)
+    rows = CONTACT + [("VISITORS", visitors or "?"), ("STATUS", "open to remote worldwide")]
+    max_chars = max(len(k) + 3 + len(v) for k, v in rows)
     width = int(pad_x * 2 + max_chars * CW + 10)
-    height = 30 + len(CONTACT) * 24 + 22
 
     body = [header_line(pad_x, 24, "contact")]
     y = 48
-    for k, v in CONTACT:
+    for k, v in rows:
         body.append(f'<text x="{pad_x}" y="{y}" fill="{ACCENT}">{k}</text>'
                     f'<text x="{pad_x + (len(k) + 3) * CW}" y="{y}" fill="{GREEN}">{v}</text>')
         y += 24
-    body.append(f'<text x="{pad_x}" y="{y}" fill="{DIM}">→ open to remote worldwide</text>')
+    y += 10
 
-    svg = (crt_head(width, height) + "".join(body) + fx_overlays(width, height) + "</svg>\n")
+    svg = (plain_head(width, y) + "".join(body) + "</svg>\n")
     return svg
 
 
@@ -471,12 +533,10 @@ if __name__ == "__main__":
     out["dark_mode.svg"] = dark
     out["light_mode.svg"] = light
 
-    out["skills.svg"] = build_skills()
+    for name, slug, desc, icon in PROJECTS:
+        out[f"project-{slug}.svg"] = build_project(name, slug, desc, icon)
 
-    for name, slug, desc in PROJECTS:
-        out[f"project-{slug}.svg"] = build_project(name, slug, desc)
-
-    out["contact.svg"] = build_contact()
+    out["contact.svg"] = build_contact(visitor_count())
 
     for name, content in out.items():
         with open(name, "w") as f:

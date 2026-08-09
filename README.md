@@ -8,10 +8,6 @@
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/skills.svg" alt="Skills">
-</p>
-
-<p align="center">
   <a href="https://github.com/AndresBlancoSierra/what"><img src="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/project-what.svg" alt="WHAT?"></a>
   <a href="https://github.com/AndresBlancoSierra/portrait-dataset-builder"><img src="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/project-portrait-dataset-builder.svg" alt="Portrait Dataset Builder"></a>
   <a href="https://github.com/AndresBlancoSierra/english-capture"><img src="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/project-english-capture.svg" alt="English Capture"></a>
@@ -26,13 +22,9 @@
 </p>
 
 <p align="center">
-  <img src="https://streak-stats.demolab.com/?user=AndresBlancoSierra&theme=dark&hide_border=true&background=050a07&stroke=00ff41&ring=00ff41&fire=39ff14&currStreakNum=00ff41&sideNums=00ff41&currStreakLabel=00ff41&sideLabels=00cc33&dates=00cc33" alt="GitHub Streak">
+  <img src="https://streak-stats.demolab.com/?user=AndresBlancoSierra&theme=transparent&hide_border=true&stroke=00ff41&ring=00ff41&fire=39ff14&currStreakNum=00ff41&sideNums=00ff41&currStreakLabel=00ff41&sideLabels=00cc33&dates=00cc33" alt="GitHub Streak">
 </p>
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/AndresBlancoSierra/AndresBlancoSierra/main/contact.svg" alt="Contact">
-</p>
-
-<p align="center">
-  <img src="https://api.visitorbadge.io/api/visitors?path=AndresBlancoSierra&label=Visitors&countColor=%2300ff41&labelColor=%23050a07" alt="Visitors">
 </p>
