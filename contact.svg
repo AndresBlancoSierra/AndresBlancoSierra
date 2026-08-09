@@ -3,29 +3,6 @@
 <defs>
 <style>
 text {{ white-space: pre; }}
-.gfx {{ animation: glitchfx 11s steps(1) infinite; }}
-@keyframes glitchfx {{
-  0%, 38% {{ transform: translate(0,0) skewX(0); }}
-  39%     {{ transform: translate(-3px,1px) skewX(-2deg); }}
-  41%     {{ transform: translate(4px,-2px) skewX(3deg); }}
-  43%     {{ transform: translate(-2px,2px) skewX(-1deg); }}
-  45%     {{ transform: translate(0,0) skewX(0); }}
-  68%     {{ transform: translate(0,0) skewX(0); }}
-  69%     {{ transform: translate(3px,-1px) skewX(2deg); }}
-  71%     {{ transform: translate(-4px,1px) skewX(-3deg); }}
-  73%     {{ transform: translate(0,0) skewX(0); }}
-  100%    {{ transform: translate(0,0) skewX(0); }}
-}}
-.chan {{ animation: chsplit 11s steps(1) infinite; }}
-@keyframes chsplit {{
-  0%, 38% {{ opacity: 0; }}
-  39%     {{ opacity: 0.9; }}
-  45%     {{ opacity: 0; }}
-  68%     {{ opacity: 0; }}
-  69%     {{ opacity: 0.9; }}
-  73%     {{ opacity: 0; }}
-  100%    {{ opacity: 0; }}
-}}
 </style>
 </defs>
-<g class="gfx"><text x="18" y="24" fill="#00ff41">andres@arch</text><text class="chan" x="15" y="25" fill="#ea36af">andres@arch</text><text class="chan" x="21" y="23" fill="#75fa69">andres@arch</text></g><text x="123.6" y="24" fill="#00cc33">:~$ </text><text x="162.0" y="24" fill="#39ff14"># contact</text><text x="18" y="48" fill="#39ff14">EMAIL</text><text x="94.8" y="48" fill="#00ff41">andresfelipeblancos15@gmail.com</text><text x="18" y="72" fill="#39ff14">LOCATION</text><text x="123.6" y="72" fill="#00ff41">Bogotá, Colombia · open to remote</text><text x="18" y="96" fill="#39ff14">VISITORS</text><text x="123.6" y="96" fill="#00ff41">31</text><text x="18" y="120" fill="#39ff14">STATUS</text><text x="104.39999999999999" y="120" fill="#00ff41">open to remote worldwide</text></svg>
+<text x="18" y="24" fill="#00ff41" font-weight="bold">andres@arch</text><text x="123.6" y="24" fill="#00cc33" font-weight="bold">:~$ </text><text x="162.0" y="24" fill="#39ff14" font-weight="bold"># contact</text><text x="18" y="48" fill="#39ff14">EMAIL</text><text x="94.8" y="48" fill="#00ff41">andresfelipeblancos15@gmail.com</text><text x="18" y="72" fill="#39ff14">LOCATION</text><text x="123.6" y="72" fill="#00ff41">Bogotá, Colombia · open to remote</text><text x="18" y="96" fill="#39ff14">VISITORS</text><text x="123.6" y="96" fill="#00ff41">36</text><text x="18" y="120" fill="#39ff14">STATUS</text><text x="104.39999999999999" y="120" fill="#00ff41">open to remote worldwide</text></svg>
