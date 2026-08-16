@@ -250,29 +250,27 @@ def build_constellation_layer(svg_w, svg_h):
         (0.68, 0.30, 0.75),
     ]
     groups = []
-    css = []
     for i, (fx, fy, sc) in enumerate(spots):
         name, data = POOL[i % len(POOL)]
         x = fx * svg_w
         y = fy * svg_h
-        dur = round(random.uniform(26, 38), 1)
-        delay = round(random.uniform(-36, 0), 1)
-        amp_x = round(random.uniform(10, 18), 1)
-        amp_y = round(random.uniform(8, 13), 1)
-        css.append(
-            f'.c{i} {{ animation: drift{i} {dur}s ease-in-out infinite alternate; '
-            f'animation-delay: {delay}s; }}'
-        )
-        css.append(
-            f'@keyframes drift{i} {{ '
-            f'0% {{ transform: translate(0,0); opacity: 0.5; }} '
-            f'45% {{ opacity: 0.85; }} '
-            f'100% {{ transform: translate({amp_x}px,{amp_y}px); opacity: 0.5; }} }}'
-        )
+        dur = round(random.uniform(10, 16), 1)
+        tw = round(random.uniform(4, 7), 1)
+        begin = round(random.uniform(-12, 0), 1)
+        amp_x = round(random.uniform(18, 34), 1)
+        amp_y = round(random.uniform(12, 24), 1)
         groups.append(
-            f'<g class="c{i}"><g opacity="0.75">{place_constellation(x, y, sc, data)}</g></g>'
+            '<g>'
+            '<animateTransform attributeName="transform" type="translate" '
+            f'values="0,0;{amp_x},{amp_y};0,0" dur="{dur}s" '
+            'keySplines="0.42 0 0.58 1;0.42 0 0.58 1" calcMode="spline" '
+            'repeatCount="indefinite"/>'
+            '<animate attributeName="opacity" values="0.45;0.95;0.45" '
+            f'dur="{tw}s" begin="{begin}s" repeatCount="indefinite"/>'
+            f'<g opacity="0.75">{place_constellation(x, y, sc, data)}</g>'
+            '</g>'
         )
-    return "\n".join(groups), "\n".join(css)
+    return "\n".join(groups), ""
 
 
 def build_comets():
@@ -439,7 +437,7 @@ def icon_path(name):
 
 def build_projects(projects, x, y0):
     body = [header_line(x, y0 + 24, "ls ~/projects")]
-    yy = y0 + 48
+    yy = y0 + 72
     for name, slug, desc, icon_name in projects:
         icon = icon_path(icon_name)
         icon_x = x + 20
@@ -589,7 +587,7 @@ text {{ white-space: pre; }}
 <circle cx="24" cy="24" r="5" fill="{DIM3}"/>
 <circle cx="42" cy="24" r="5" fill="{DIM3}"/>
 <circle cx="60" cy="24" r="5" fill="{DIM3}"/>
-<text x="{svg_w // 2}" y="28" fill="{DIM}" font-size="13" text-anchor="middle" font-family="{MONO}">andres@arch — zsh</text>
+<text x="80" y="28" fill="{DIM}" font-size="13" font-family="{MONO}">andres@arch — zsh</text>
 
 <g id="constellations-bg">
 {const_groups}
