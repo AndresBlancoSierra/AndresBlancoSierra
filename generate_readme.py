@@ -222,7 +222,7 @@ def place_constellation(x, y, scale, data):
     for cx, cy, r in data["c"]:
         parts.append(f'<circle cx="{x + (float(cx) - cxm) * scale:.1f}" '
                      f'cy="{y + (float(cy) - cym) * scale:.1f}" '
-                     f'r="1.2" fill="{FG}" opacity="0.5"/>')
+                     f'r="1.2" fill="{FG}" opacity="0.65"/>')
     for x1, y1, x2, y2 in data["l"]:
         parts.append(f'<line x1="{x + (float(x1) - cxm) * scale:.1f}" '
                      f'y1="{y + (float(y1) - cym) * scale:.1f}" '
@@ -255,20 +255,22 @@ def build_constellation_layer(svg_w, svg_h):
         name, data = POOL[i % len(POOL)]
         x = fx * svg_w
         y = fy * svg_h
-        dur = round(random.uniform(42, 60), 1)
-        delay = round(random.uniform(-58, 0), 1)
-        amp_x = round(random.uniform(4, 8), 1)
-        amp_y = round(random.uniform(3, 6), 1)
+        dur = round(random.uniform(26, 38), 1)
+        delay = round(random.uniform(-36, 0), 1)
+        amp_x = round(random.uniform(10, 18), 1)
+        amp_y = round(random.uniform(8, 13), 1)
         css.append(
             f'.c{i} {{ animation: drift{i} {dur}s ease-in-out infinite alternate; '
             f'animation-delay: {delay}s; }}'
         )
         css.append(
-            f'@keyframes drift{i} {{ 0% {{ transform: translate(0,0); }} '
-            f'100% {{ transform: translate({amp_x}px,{amp_y}px); }} }}'
+            f'@keyframes drift{i} {{ '
+            f'0% {{ transform: translate(0,0); opacity: 0.5; }} '
+            f'45% {{ opacity: 0.85; }} '
+            f'100% {{ transform: translate({amp_x}px,{amp_y}px); opacity: 0.5; }} }}'
         )
         groups.append(
-            f'<g class="c{i}"><g opacity="0.6">{place_constellation(x, y, sc, data)}</g></g>'
+            f'<g class="c{i}"><g opacity="0.75">{place_constellation(x, y, sc, data)}</g></g>'
         )
     return "\n".join(groups), "\n".join(css)
 
@@ -365,7 +367,7 @@ def orion_logo():
 
 
 def build_hero(stats, art, info_x, y0):
-    logo_block = f'<g transform="translate(20, 12)">{orion_logo()}</g>'
+    logo_block = f'<g transform="translate(20, {y0 + 46})">{orion_logo()}</g>'
 
     info = [f'<text x="{info_x}" y="{y0 + 25}" fill="{FG}" font-size="16" font-family="{MONO}">']
     info.append(f'<tspan x="{info_x}" y="{y0 + 25}" class="glitch" fill="{FG}">andres@arch</tspan>'
@@ -493,10 +495,10 @@ def build():
     S["INFO_W"] = 701
     hero_art_w = 280
 
-    hero_logo, hero_info, hero_h = build_hero(stats, ARCH_ART, 340, 10)
+    hero_logo, hero_info, hero_h = build_hero(stats, ARCH_ART, 340, 46)
 
     # --- Proyectos ---
-    proj_html, proj_end = build_projects(projects, 40, hero_h + 14)
+    proj_html, proj_end = build_projects(projects, 40, hero_h + 50)
 
     # --- Streak + contact lado a lado (ancho limitado) ---
     sec_w = 430
@@ -511,8 +513,8 @@ def build():
         ("VISITORS", visitors or "?"),
         ("STATUS", "open to remote worldwide"),
     ]
-    streak_html, streak_end = build_info_section("streak", streak_rows, 40, proj_end + 10)
-    contact_html, contact_end = build_info_section("contact", contact_rows, 40 + sec_w, proj_end + 10)
+    streak_html, streak_end = build_info_section("streak", streak_rows, 40, proj_end + 40)
+    contact_html, contact_end = build_info_section("contact", contact_rows, 40 + sec_w, proj_end + 40)
 
     svg_h = max(contact_end, streak_end) + 34
     svg_w = 960
